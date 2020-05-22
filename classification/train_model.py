@@ -55,6 +55,14 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     print("Parameter file is saved as ", save_path)
 
 ##### execution #####
+# random
+keep_reproducibility = False
+if keep_reproducibility:
+    # CPU
+    torch.manual_seed(1234)
+    np.random.seed(1234)
+    random.seed(1234)
+
 # network
 use_pretrained = True
 net = models.vgg16(pretrained=use_pretrained)
