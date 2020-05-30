@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import numpy as np
 import glob
 from PIL import Image
@@ -9,7 +7,7 @@ def compute_images_mean_std(rootpath, file_type, resize=-1):
 
     data_appended = np.empty([0, 3])
     for path in file_list:
-        print(path)
+        # print(path)
         img = Image.open(path)
         if resize != -1:
             w, h = img.size
