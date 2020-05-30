@@ -30,11 +30,11 @@ class image_transform():
 
 ##### test #####
 # size = 224  #VGG16
-# dir_name = "./data/train/dog"
-# file_type = "jpeg"
+# dir_name = "./dataset_lion_tiger/train/lion"
+# file_type = "jpg"
 # mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type)
 #
-# image_file_path = './data/train/dog/dog_01.jpeg'
+# image_file_path = './dataset_lion_tiger/lion_example.jpg'
 # img = Image.open(image_file_path)
 #
 # transform = image_transform(size, mean, std)

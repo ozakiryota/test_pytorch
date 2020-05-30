@@ -32,13 +32,13 @@ class original_dataset(data.Dataset):
         return img_transformed, label
 
 ##### test #####
-# rootpath = "./data"
-# file_type = "jpeg"
+# rootpath = "./dataset_lion_tiger"
+# file_type = "jpg"
 # train_list = make_datapath_list.make_datapath_list(rootpath, file_type, phase="train")
 # val_list = make_datapath_list.make_datapath_list(rootpath, file_type, phase="val")
 #
 # size = 224  #VGG16
-# mean, std = compute_images_mean_std.compute_images_mean_std("./data/train", "jpeg")
+# mean, std = compute_images_mean_std.compute_images_mean_std("./dataset_lion_tiger/train", "jpg")
 #
 # train_dataset = original_dataset(
 #     file_list=train_list,

@@ -6,8 +6,8 @@ def make_datapath_list(rootpath, file_type, phase="train"):
     return path_list
 
 ##### test #####
-# rootpath = "./data"
-# file_type = "jpeg"
+# rootpath = "./dataset_lion_tiger"
+# file_type = "jpg"
 # train_list = make_datapath_list(rootpath, file_type, phase="train")
 # val_list = make_datapath_list(rootpath, file_type, phase="val")
 # print(train_list)
