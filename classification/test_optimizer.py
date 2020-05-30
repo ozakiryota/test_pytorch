@@ -6,7 +6,6 @@ import torch.optim as optim
 use_pretrained = True
 net = models.vgg16(pretrained=use_pretrained)
 net.classifier[6] = nn.Linear(in_features=4096, out_features=2)
-net.train() #train mode
 
 # param
 params_to_update = []
@@ -28,3 +27,5 @@ print(params_to_update)
 
 # optimizer
 optimizer = optim.SGD(params=params_to_update, lr=0.001, momentum=0.9)  #lr: learning rate
+
+print(optimizer)

@@ -11,6 +11,13 @@ import image_transform
 import original_dataset
 
 def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print("device = ", device)
+
+    net.to(device)
+
+    torch.backends.cudnn.benchmark = True
+
     for epoch in range(num_epochs):
         print("Epoch {}/{}".format(epoch+1, num_epochs))
         print("----------")
@@ -28,6 +35,9 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
                 continue
 
             for inputs, labels in tqdm(dataloaders_dict[phase]):
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
                 # initialize optimizer
                 optimizer.zero_grad()   #reset grad to zero (after .step())
 
@@ -35,7 +45,7 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
                     # forward
                     outputs = net(inputs)
                     loss = criterion(outputs, labels)
-                    _, preds = torch.max(outputs, 1)  #return (values, indices)
+                    _, preds = torch.max(outputs, 1)  #.max(tensor, axis) return (values, indices)
 
                     # backward
                     if phase == "train":
@@ -50,7 +60,7 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
 
             print("{} Loss: {:.4f} Acc: {:.4f}".format(phase, epoch_loss, epoch_acc))
     # save param
-    save_path = "./weights/cpu/weights_lion_tiger.pth"
+    save_path = "./weights/gpu/weights_lion_tiger_finetuning.pth"
     torch.save(net.state_dict(), save_path)
     print("Parameter file is saved as ", save_path)
 
@@ -101,22 +111,45 @@ dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
 criterion = nn.CrossEntropyLoss()
 
 # param
-params_to_update = []
-update_param_names  = ["classifier.6.weight", "classifier.6.bias"]
+params_to_update_1 = []
+params_to_update_2 = []
+params_to_update_3 = []
+
+update_param_names_1  = ["features"]
+update_param_names_2  = ["classifier.0.weight", "classifier.0.bias", "classifier.3.weight", "classifier.3.bias"]
+update_param_names_3  = ["classifier.6.weight", "classifier.6.bias"]
+
 for name, param in net.named_parameters():
     # print(name)
     # print(param)
-    if name in update_param_names:
-        print(name)
+
+    if update_param_names_1[0] in name:
         param.requires_grad = True
-        params_to_update.append(param)
+        params_to_update_1.append(param)
+        print("add to params_to_update_1: ", name)
+    elif name in update_param_names_2:
+        param.requires_grad = True
+        params_to_update_2.append(param)
+        print("add to params_to_update_2: ", name)
+    elif name in update_param_names_3:
+        param.requires_grad = True
+        params_to_update_3.append(param)
+        print("add to params_to_update_3: ", name)
     else:
         param.requires_grad = False
+
 print("----------")
-print(params_to_update)
+print("params_to_update_1:\n", params_to_update_1)
+print("params_to_update_2:\n", params_to_update_2)
+print("params_to_update_3:\n", params_to_update_2)
 
 # optimizer
-optimizer = optim.SGD(params=params_to_update, lr=0.001, momentum=0.9)  #lr: learning rate
+optimizer = optim.SGD([
+    {"params": params_to_update_1, "lr": 1e-4},
+    {"params": params_to_update_2, "lr": 5e-4},
+    {"params": params_to_update_3, "lr": 1e-3},
+], momentum=0.9)
+print(optimizer)
 
 # execution
 num_epochs = 2

@@ -16,9 +16,10 @@ net = models.vgg16(pretrained=use_pretrained)
 net.classifier[6] = nn.Linear(in_features=4096, out_features=2)
 net.eval()
 
-load_path = "./weights/weights_lion_tiger.pth"
+# load_path = "./weights/cpu/weights_lion_tiger.pth"
+load_path = "./weights/gpu/weights_lion_tiger_finetuning.pth"
 
-## saved in CPU -> load in CPU
+## saved in CPU -> load in CPU, saved in GPU -> load in GPU
 load_weights = torch.load(load_path)
 
 ## saved in GPU -> load in CPU
