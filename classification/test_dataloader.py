@@ -1,9 +1,26 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 import torch
 
 import make_datapath_list
 import compute_images_mean_std
 import image_transform
 import original_dataset
+
+def show_inputs(inputs):
+    h = 4
+    w = 8
+    i = 0
+    plt.figure()
+    for tensor in inputs:
+        # print(tensor.size())
+        img = tensor.numpy().transpose((1, 2, 0))
+        img = np.clip(img, 0, 1)
+        plt.subplot(h, w, i+1)
+        plt.imshow(img)
+        i += 1
+    plt.show()
 
 rootpath = "./dataset_lion_tiger"
 file_type = "jpg"
@@ -34,6 +51,9 @@ val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size,
 dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
 
 batch_iterator = iter(dataloaders_dict["train"])
+# batch_iterator = iter(dataloaders_dict["val"])
 inputs, labels = next(batch_iterator)
+
 print(inputs.size())
 print(labels)
+show_inputs(inputs)

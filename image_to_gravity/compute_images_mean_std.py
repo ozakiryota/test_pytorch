@@ -3,7 +3,8 @@ import glob
 from PIL import Image
 
 def compute_images_mean_std(rootpath, file_type, resize=-1):
-    file_list = glob.glob(rootpath + "/**/*." + file_type)
+    # file_list = glob.glob(rootpath + "/**/*." + file_type)
+    file_list = glob.glob(rootpath + "/*." + file_type)
     print("compute_images_mean_std: ", rootpath)
 
     data_appended = np.empty([0, 3])

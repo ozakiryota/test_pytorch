@@ -6,12 +6,12 @@ from torchvision import transforms
 
 import compute_images_mean_std
 
-class image_transform():
+class data_transform():
     def __init__(self, resize, mean, std):
         self.data_transform = {
             "train": transforms.Compose([
-                transforms.RandomResizedCrop(resize, scale=(0.5, 1.0)),
-                transforms.RandomHorizontalFlip(),
+                transforms.Resize(resize),
+                transforms.CenterCrop(resize),
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std)
             ]),
@@ -24,23 +24,23 @@ class image_transform():
         }
 
     def __call__(self, img, phase="train"):
-        # print("image_transform phase: ", phase)
         return self.data_transform[phase](img)
 
 ##### test #####
 # size = 224  #VGG16
-# dir_name = "./dataset_lion_tiger/train"
+# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
 # file_type = "jpg"
 # mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
 #
-# image_file_path = './dataset_lion_tiger/lion_example.jpg'
+# image_file_path = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train/img0.jpg"
 # img = Image.open(image_file_path)
+# print("img.size = ", img.size)
 #
-# transform = image_transform(size, mean, std)
+# transform = data_transform(size, mean, std)
 # img_transformed = transform(img, phase="train")
-#
 # img_transformed = img_transformed.numpy().transpose((1, 2, 0))  #(rgb, h, w) -> (h, w, rgb)
 # img_transformed = np.clip(img_transformed, 0, 1)
+# print("img_transformed.shape = ", img_transformed.shape)
 #
 # plt.figure()
 # plt.subplot(1, 2, 1)
