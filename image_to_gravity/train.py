@@ -162,11 +162,11 @@ print("----------")
 
 ## optimizer
 optimizer = optim.SGD([
-    {"params": params_to_update_1, "lr": 5e-6},
-    {"params": params_to_update_2, "lr": 5e-6}
+    {"params": params_to_update_1, "lr": 1e-5},
+    {"params": params_to_update_2, "lr": 1e-5}
 ], momentum=0.9)
 print(optimizer)
 
 ## execution
-num_epochs = 20
+num_epochs = 50
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)

@@ -1,6 +1,5 @@
 import torch.utils.data as data
 from PIL import Image
-import numpy as np
 
 import torch
 
@@ -20,15 +19,13 @@ class OriginalDataset(data.Dataset):
     def __getitem__(self, index):
         img_path = self.data_list[index][3]
         img = Image.open(img_path)
+        img_transformed = self.transform(img, phase=self.phase)
 
-        acc_str_list = self.data_list[index][:3]
-        acc_list = [float(num) for num in acc_str_list]
-        acc = np.array(acc_list)
-        # acc = torch.FloatTensor(acc)
+        label_str = self.data_list[index][:3]
+        label = [float(num) for num in label_str]
+        label = torch.FloatTensor(label)
 
-        img_transformed, acc_transformed = self.transform(img, acc, phase=self.phase)
-
-        return img_transformed, acc_transformed
+        return img_transformed, label
 
 ##### test #####
 # ## list

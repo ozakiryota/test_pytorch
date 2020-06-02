@@ -51,13 +51,19 @@ w = 10
 for data in val_list:
     img_path = data[3]
     img = Image.open(img_path)
-    img_trasformed = transform(img)
 
-    plt.subplot(h, w, i+1)
-    plt.imshow(np.clip(img_trasformed.numpy().transpose((1, 2, 0)), 0, 1))
-    plt.title(i)
-    # plt.imshow(img)
-    plt.tick_params(labelbottom=False, labelleft=False, bottom=False, left=False)
+    acc_str_list = data[:3]
+    acc_list = [float(num) for num in acc_str_list]
+    acc = np.array(acc_list)
+
+    img_trasformed, _ = transform(img, acc, phase="val")
+
+    if i < h*w:
+        plt.subplot(h, w, i+1)
+        plt.imshow(np.clip(img_trasformed.numpy().transpose((1, 2, 0)), 0, 1))
+        plt.title(i)
+        # plt.imshow(img)
+        plt.tick_params(labelbottom=False, labelleft=False, bottom=False, left=False)
 
     inputs = img_trasformed.unsqueeze_(0)
     outputs = net(inputs)
