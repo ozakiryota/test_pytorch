@@ -1,3 +1,4 @@
 classification/ILSVRC2012
 classification/dataset_lion_tiger
 classification/weights
+image_to_gravity/weights
