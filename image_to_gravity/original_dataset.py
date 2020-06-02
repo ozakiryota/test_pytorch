@@ -24,7 +24,6 @@ class OriginalDataset(data.Dataset):
         acc_str_list = self.data_list[index][:3]
         acc_list = [float(num) for num in acc_str_list]
         acc = np.array(acc_list)
-        # acc = torch.FloatTensor(acc)
 
         img_transformed, acc_transformed = self.transform(img, acc, phase=self.phase)
 
