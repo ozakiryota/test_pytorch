@@ -22,6 +22,7 @@ net.classifier = nn.Sequential(
     nn.ReLU(True)
 )
 print(net)
+net.eval()
 
 ## saved in CPU -> load in CPU, saved in GPU -> load in GPU
 load_path = "./weights/weights_image_to_gravity.pth"

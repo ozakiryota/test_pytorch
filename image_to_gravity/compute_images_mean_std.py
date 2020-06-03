@@ -1,6 +1,7 @@
 import numpy as np
 import glob
 from PIL import Image
+from tqdm import tqdm
 
 def compute_images_mean_std(rootpath, file_type, resize=-1):
     # file_list = glob.glob(rootpath + "/**/*." + file_type)
@@ -8,7 +9,7 @@ def compute_images_mean_std(rootpath, file_type, resize=-1):
     print("compute_images_mean_std: ", rootpath)
 
     data_appended = np.empty([0, 3])
-    for path in file_list:
+    for path in tqdm(file_list):
         # print(path)
         img = Image.open(path)
         if resize != -1:

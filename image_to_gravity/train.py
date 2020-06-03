@@ -17,8 +17,6 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
 
     net.to(device)
 
-    torch.backends.cudnn.benchmark = True
-
     # loss record
     record_loss_train = []
     record_loss_val = []
@@ -72,21 +70,24 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     print("Parameter file is saved as ", save_path)
 
     # graph
+    graph = plt.figure()
     plt.plot(range(len(record_loss_train)), record_loss_train, label="Train")
     plt.plot(range(len(record_loss_val)), record_loss_val, label="Validation")
     plt.legend()
     plt.xlabel("Epoch")
     plt.ylabel("Error")
+    graph.savefig("./graph/graph.jpg")
     plt.show()
 
 ##### execution #####
 ## random
 keep_reproducibility = False
 if keep_reproducibility:
-    # CPU
     torch.manual_seed(1234)
     np.random.seed(1234)
     random.seed(1234)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 ## list
 rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
@@ -112,10 +113,12 @@ val_dataset = original_dataset.OriginalDataset(
 )
 
 ## dataloader
-batch_size = 30
+batch_size = 50
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
+print("train data: ", len(dataloaders_dict["train"].dataset))
+print("val data: ", len(dataloaders_dict["val"].dataset))
 
 ## criterion
 # criterion = nn.CrossEntropyLoss()
@@ -168,5 +171,5 @@ optimizer = optim.SGD([
 print(optimizer)
 
 ## execution
-num_epochs = 50
+num_epochs = 20
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)
