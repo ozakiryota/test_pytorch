@@ -35,8 +35,8 @@ class data_transform():
             # vector rotation
             rot = np.array([
                 [1, 0, 0],
-                [0, math.cos(angle_rad), -math.sin(angle_rad)],
-                [0, math.sin(angle_rad), math.cos(angle_rad)]
+                [0, math.cos(-angle_rad), -math.sin(-angle_rad)],
+                [0, math.sin(-angle_rad), math.cos(-angle_rad)]
             ])
             acc = np.dot(rot, acc)
 
@@ -60,7 +60,7 @@ class data_transform():
 # img = Image.open(image_file_path)
 # print("img.size = ", img.size)
 #
-# g_list = [1, 1, 1]
+# g_list = [0, 0, 1]
 # acc = np.array(g_list)
 #
 # transform = data_transform(size, mean, std)

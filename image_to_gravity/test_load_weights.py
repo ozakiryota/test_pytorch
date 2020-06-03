@@ -61,9 +61,11 @@ val_dataset = original_dataset.OriginalDataset(
 batch_size = 100
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
 
 ## predict
-batch_iterator = iter(val_dataloader)
+# batch_iterator = iter(dataloaders_dict["train"])
+batch_iterator = iter(dataloaders_dict["val"])
 inputs, labels = next(batch_iterator)
 outputs = net(inputs) 
 
@@ -71,8 +73,6 @@ plt.figure()
 i = 0
 h = 10
 w = 10
-
-print("inputs", inputs)
 
 for i in range(inputs.size(0)):
     print(i)
