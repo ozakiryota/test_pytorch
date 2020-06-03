@@ -177,5 +177,5 @@ optimizer = optim.SGD([
 print(optimizer)
 
 ## execution
-num_epochs = 20
+num_epochs = 200
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)
