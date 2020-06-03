@@ -5,6 +5,7 @@ import torch
 from torchvision import models
 import torch.nn as nn
 import torch.optim as optim
+from tensorboardX import SummaryWriter
 
 import make_datapath_list
 import compute_images_mean_std
@@ -18,6 +19,7 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     net.to(device)
 
     # loss record
+    writer = SummaryWriter()
     record_loss_train = []
     record_loss_val = []
 
@@ -62,8 +64,10 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
 
             if phase == "train":
                 record_loss_train.append(epoch_loss)
+                writer.add_scalar("Loss/train", epoch_loss, epoch)
             else:
                 record_loss_val.append(epoch_loss)
+                writer.add_scalar("Loss/val", epoch_loss, epoch)
     # save param
     save_path = "./weights/weights_image_to_gravity.pth"
     torch.save(net.state_dict(), save_path)
@@ -78,6 +82,8 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     plt.ylabel("Error")
     graph.savefig("./graph/graph.jpg")
     plt.show()
+
+    writer.close()
 
 ##### execution #####
 ## random
