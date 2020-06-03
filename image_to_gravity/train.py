@@ -171,8 +171,8 @@ print("----------")
 
 ## optimizer
 optimizer = optim.SGD([
-    {"params": params_to_update_1, "lr": 1e-5},
-    {"params": params_to_update_2, "lr": 1e-5}
+    {"params": params_to_update_1, "lr": 5e-6},
+    {"params": params_to_update_2, "lr": 5e-6}
 ], momentum=0.9)
 print(optimizer)
 
