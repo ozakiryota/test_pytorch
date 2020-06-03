@@ -6,10 +6,9 @@ import torch
 from torchvision import models
 import torch.nn as nn
 
-import compute_images_mean_std
 import make_datapath_list
+import compute_images_mean_std
 import data_transform
-import original_dataset
 
 ## network
 use_pretrained = True
@@ -30,57 +29,50 @@ load_path = "./weights/weights_image_to_gravity.pth"
 load_weights = torch.load(load_path)
 net.load_state_dict(load_weights)
 
-## mean, std
-size = 224  #VGG16
-dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
-file_type = "jpg"
-mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
-
 ## list
 rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
 csv_name = "save_image_with_imu.csv"
 train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
 val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
 
+## mean, std
+size = 224  #VGG16
+dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
+file_type = "jpg"
+mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+
 ## transform
 transform = data_transform.data_transform(size, mean, std)
-
-## dataset
-train_dataset = original_dataset.OriginalDataset(
-    data_list=train_list,
-    transform=data_transform.data_transform(size, mean, std),
-    phase="train"
-)
-val_dataset = original_dataset.OriginalDataset(
-    data_list=val_list,
-    transform=data_transform.data_transform(size, mean, std),
-    phase="val"
-)
-
-## dataloader
-batch_size = 100
-train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-
-## predict
-batch_iterator = iter(val_dataloader)
-inputs, labels = next(batch_iterator)
-outputs = net(inputs) 
 
 plt.figure()
 i = 0
 h = 10
 w = 10
 
-print("inputs", inputs)
+# for data in val_list:
+for data in train_list:
+    img_path = data[3]
+    img = Image.open(img_path)
 
-for i in range(inputs.size(0)):
-    print(i)
-    print("label: ", labels[i])
-    print("output: ", outputs[i])
+    acc_str_list = data[:3]
+    acc_list = [float(num) for num in acc_str_list]
+    acc = np.array(acc_list)
+
+    img_trasformed, _ = transform(img, acc, phase="val")
+
     if i < h*w:
         plt.subplot(h, w, i+1)
-        plt.imshow(np.clip(inputs[i].numpy().transpose((1, 2, 0)), 0, 1))
+        plt.imshow(np.clip(img_trasformed.numpy().transpose((1, 2, 0)), 0, 1))
         plt.title(i)
+        # plt.imshow(img)
         plt.tick_params(labelbottom=False, labelleft=False, bottom=False, left=False)
+
+    inputs = img_trasformed.unsqueeze_(0)
+    outputs = net(inputs)
+    print(i)
+    print("label: ", data[:3])
+    print("outputs", outputs)
+
+    i += 1
+
 plt.show()

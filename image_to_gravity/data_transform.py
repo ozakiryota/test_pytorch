@@ -29,7 +29,7 @@ class data_transform():
         # return self.data_transform[phase](img)
         if phase == "train":
             angle_deg = random.uniform(-90, 90)
-            angle_rad = angle_deg/180*math.pi
+            angle_rad = angle_deg / 180 * math.pi
             # print("angle_deg = ", angle_deg)
 
             # vector rotation
