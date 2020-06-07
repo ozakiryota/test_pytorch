@@ -27,6 +27,7 @@ class data_transform():
 
     def __call__(self, img, acc, phase="train"):
         if phase == "train":
+        # if (phase == "train") or (phase == "val"):
             angle_deg = random.uniform(-45, 45)
             angle_rad = angle_deg / 180 * math.pi
             # print("angle_deg = ", angle_deg)

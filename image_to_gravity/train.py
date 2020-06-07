@@ -103,8 +103,10 @@ val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val"
 
 ## mean, std
 size = 224  #VGG16
-file_type = "jpg"
-mean, std = compute_images_mean_std.compute_images_mean_std(rootpath + "/train", file_type, resize=size)
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(rootpath + "/train", file_type, resize=size)
+mean = ([0.5, 0.5, 0.5])
+std = ([0.25, 0.25, 0.25])
 
 ## dataset
 train_dataset = original_dataset.OriginalDataset(
@@ -138,8 +140,8 @@ net.features = nn.Sequential(*list(net.features.children())[:-3])
 net.classifier = nn.Sequential(
     nn.Linear(in_features=73728, out_features=18, bias=True),
     nn.ReLU(True),
-    nn.Linear(in_features=18, out_features=3, bias=True),
-    nn.ReLU(True)
+    nn.Linear(in_features=18, out_features=3, bias=True)
+    # nn.ReLU(True)
 )
 print(net)
 

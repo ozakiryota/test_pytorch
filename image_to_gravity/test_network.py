@@ -1,4 +1,5 @@
 from PIL import Image
+import numpy as np
 
 from torchvision import models
 import torch.nn as nn
@@ -16,16 +17,17 @@ net.features = new_features
 net.classifier = nn.Sequential(
     nn.Linear(in_features=73728, out_features=18, bias=True),
     nn.ReLU(True),
-    nn.Linear(in_features=18, out_features=3, bias=True),
-    nn.ReLU(True)
+    nn.Linear(in_features=18, out_features=3, bias=True)
+    # nn.ReLU(True)
 )
 
 print("original network: \n", net)
 
-image_path = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train/img0.jpg"
+image_path = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/example.jpg"
 img = Image.open(image_path)
+acc = np.array([0, 0, 1])
 transform = data_transform.data_transform(224, (0.5, 0.5, 0.5), (0.25, 0.25, 0.25))
-img_transformed = transform(img, phase="train")
+img_transformed, _ = transform(img, acc, phase="train")
 inputs = img_transformed.unsqueeze_(0)
 outputs = net(inputs)
 print("img_transformed.size() = ", img_transformed.size())

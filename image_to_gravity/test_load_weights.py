@@ -11,6 +11,10 @@ import make_datapath_list
 import data_transform
 import original_dataset
 
+## device
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print("device = ", device)
+
 ## network
 use_pretrained = True
 net = models.vgg16(pretrained=use_pretrained)
@@ -19,10 +23,10 @@ net.features = nn.Sequential(*list(net.features.children())[:-3])
 net.classifier = nn.Sequential(
     nn.Linear(in_features=73728, out_features=18, bias=True),
     nn.ReLU(True),
-    nn.Linear(in_features=18, out_features=3, bias=True),
-    nn.ReLU(True)
+    nn.Linear(in_features=18, out_features=3, bias=True)
 )
 print(net)
+net.to(device)
 net.eval()
 
 ## saved in CPU -> load in CPU, saved in GPU -> load in GPU
@@ -32,9 +36,11 @@ net.load_state_dict(load_weights)
 
 ## mean, std
 size = 224  #VGG16
-dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
-file_type = "jpg"
-mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+mean = ([0.5, 0.5, 0.5])
+std = ([0.25, 0.25, 0.25])
 
 ## list
 rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
@@ -58,7 +64,7 @@ val_dataset = original_dataset.OriginalDataset(
 )
 
 ## dataloader
-batch_size = 100
+batch_size = 50
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
@@ -67,11 +73,14 @@ dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
 # batch_iterator = iter(dataloaders_dict["train"])
 batch_iterator = iter(dataloaders_dict["val"])
 inputs, labels = next(batch_iterator)
-outputs = net(inputs) 
+inputs_device = inputs.to(device)
+labels_device = labels.to(device)
+outputs = net(inputs_device)
+print("tesy")
 
 plt.figure()
 i = 0
-h = 10
+h = 5
 w = 10
 
 for i in range(inputs.size(0)):
