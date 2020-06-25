@@ -3,3 +3,5 @@ classification/dataset_lion_tiger
 classification/weights
 image_to_gravity/weights
 image_to_gravity/runs
+velodyne_to_gravity/weights
+velodyne_to_gravity/runs
