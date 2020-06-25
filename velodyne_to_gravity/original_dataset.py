@@ -29,24 +29,24 @@ class OriginalDataset(data.Dataset):
         return img_transformed, acc_transformed
 
 ##### test #####
-## list
-rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne"
-csv_name = "save_imu_camera_velodyne.csv"
-train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
-val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
-
-## dataset
-train_dataset = OriginalDataset(
-    data_list=train_list,
-    transform=data_transform.data_transform(),
-    phase="train"
-)
-val_dataset = OriginalDataset(
-    data_list=val_list,
-    transform=data_transform.data_transform(),
-    phase="val"
-)
-
-index = 0
-print("index", index, ": ", train_dataset.__getitem__(index)[0].size())   #data
-print("index", index, ": ", train_dataset.__getitem__(index)[1])   #label
+# ## list
+# rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne"
+# csv_name = "save_imu_camera_velodyne.csv"
+# train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
+# val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
+#
+# ## dataset
+# train_dataset = OriginalDataset(
+#     data_list=train_list,
+#     transform=data_transform.data_transform(),
+#     phase="train"
+# )
+# val_dataset = OriginalDataset(
+#     data_list=val_list,
+#     transform=data_transform.data_transform(),
+#     phase="val"
+# )
+#
+# index = 0
+# print("index", index, ": ", train_dataset.__getitem__(index)[0].size())   #data
+# print("index", index, ": ", train_dataset.__getitem__(index)[1])   #label

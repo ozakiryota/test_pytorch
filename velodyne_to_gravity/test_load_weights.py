@@ -60,7 +60,6 @@ inputs, labels = next(batch_iterator)
 inputs_device = inputs.to(device)
 labels_device = labels.to(device)
 outputs = net(inputs_device)
-print("test")
 
 plt.figure()
 i = 0
