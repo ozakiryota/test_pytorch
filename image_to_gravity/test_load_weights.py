@@ -1,6 +1,7 @@
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 import torch
 from torchvision import models
@@ -83,13 +84,31 @@ i = 0
 h = 5
 w = 10
 
+sum_r = 0.0
+sum_p = 0.0
+def accToRP(acc):
+    r = math.atan2(acc[1], acc[2])
+    p = math.atan2(-acc[0], math.sqrt(acc[1]*acc[1] + acc[2]*acc[2]))
+    print("r[deg]: ", r/math.pi*180.0, " p[deg]: ", p/math.pi*180.0)
+    return r, p
+
 for i in range(inputs.size(0)):
     print(i)
     print("label: ", labels[i])
     print("output: ", outputs[i])
+    l_r, l_p = accToRP(labels[i])
+    o_r, o_p = accToRP(outputs[i])
+    e_r = math.atan2(math.sin(l_r - o_r), math.cos(l_r - o_r))
+    e_p = math.atan2(math.sin(l_p - o_p), math.cos(l_p - o_p))
+    print("e_r[deg]: ", e_r/math.pi*180.0, " e_p[deg]: ", e_p/math.pi*180.0)
+    sum_r += abs(e_r)
+    sum_p += abs(e_p)
     if i < h*w:
         plt.subplot(h, w, i+1)
         plt.imshow(np.clip(inputs[i].numpy().transpose((1, 2, 0)), 0, 1))
         plt.title(i)
         plt.tick_params(labelbottom=False, labelleft=False, bottom=False, left=False)
+
+print("---ave---\n e_r[deg]: ", sum_r/inputs.size(0)/math.pi*180.0, " e_p[deg]: ", sum_p/inputs.size(0)/math.pi*180.0)
+
 plt.show()
