@@ -30,9 +30,11 @@ val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val"
 
 ## mean, std
 size = 224  #VGG16
-dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
-file_type = "jpg"
-mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+mean = ([0.5, 0.5, 0.5])
+std = ([0.25, 0.25, 0.25])
 
 ## dataset
 train_dataset = original_dataset.OriginalDataset(
@@ -60,5 +62,6 @@ inputs, labels = next(batch_iterator)
 
 print("inputs.size() = ", inputs.size())
 print("labels = ", labels)
+print("labels[0] = ", labels[0])
 print("labels.size() = ", labels.size())
 show_inputs(inputs)

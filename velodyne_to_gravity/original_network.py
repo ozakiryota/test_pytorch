@@ -43,13 +43,13 @@ class OriginalNet(nn.Module):
 # print(net)
 # for param_name, param_value in net.named_parameters():
 #     print(param_name)
-# image_path = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne/depth_example.jpg"
-# img = Image.open(image_path)
+# mat_file_path = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne/example_depth.npy"
+# mat = np.load(mat_file_path)
 # acc = np.array([0, 0, 1])
 # transform = data_transform.data_transform()
-# img_transformed, _ = transform(img, acc, phase="train")
-# inputs = img_transformed.unsqueeze_(0)
-# outputs = net(inputs)
-# print("img_transformed.size() = ", img_transformed.size())
+# mat_trans, _ = transform(mat, acc, phase="train")
+# print("mat_trans.size() = ", mat_trans.size())
+# inputs = mat_trans.unsqueeze_(0)
 # print("inputs.size() = ", inputs.size())
+# outputs = net(inputs)
 # print("outputs.size() = ", outputs.size())

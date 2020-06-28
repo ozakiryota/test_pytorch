@@ -11,6 +11,7 @@ import make_datapath_list
 import data_transform
 import original_dataset
 import original_network
+import original_criterion
 
 def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -49,6 +50,7 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
                     # forward
                     outputs = net(inputs)
                     loss = criterion(outputs, labels)
+                    # loss = original_criterion.originalCriterion(outputs, labels)
 
                     # backward
                     if phase == "train":
@@ -97,7 +99,7 @@ if keep_reproducibility:
 
 ## list
 rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne"
-csv_name = "save_imu_camera_velodyne.csv"
+csv_name = "imu_color_depth.csv"
 train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
 val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
 
@@ -129,7 +131,7 @@ net = original_network.OriginalNet()
 print(net)
 
 ## optimizer
-optimizer = optim.SGD(params=net.parameters(), lr=1e-4, momentum=0.9)
+optimizer = optim.SGD(params=net.parameters(), lr=1e-5, momentum=0.9)
 print(optimizer)
 
 ## execution
