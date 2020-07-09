@@ -5,6 +5,7 @@ import numpy as np
 import torch
 
 import make_datapath_list
+import compute_images_mean_std
 import data_transform
 
 class OriginalDataset(data.Dataset):
@@ -24,21 +25,23 @@ class OriginalDataset(data.Dataset):
         acc_list = [float(num) for num in acc_str_list]
         acc = np.array(acc_list)
 
-        img_trans, acc_trans = self.transform(img, acc, phase=self.phase)
+        img_transformed, acc_transformed = self.transform(img, acc, phase=self.phase)
 
-        return img_trans, acc_trans
+        return img_transformed, acc_transformed
 
 ##### test #####
 # ## list
-# train_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/train"
-# val_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/val"
-# csv_name = "imu_camera.csv"
-# train_list = make_datapath_list.make_datapath_list(train_rootpath, csv_name)
-# val_list = make_datapath_list.make_datapath_list(val_rootpath, csv_name)
-# ## trans param
+# rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
+# csv_name = "save_image_with_imu.csv"
+# train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
+# val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
+#
+# ## mean, std
 # size = 224  #VGG16
-# mean = ([0.25, 0.25, 0.25])
-# std = ([0.5, 0.5, 0.5])
+# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+#
 # ## dataset
 # train_dataset = OriginalDataset(
 #     data_list=train_list,
@@ -50,7 +53,7 @@ class OriginalDataset(data.Dataset):
 #     transform=data_transform.data_transform(size, mean, std),
 #     phase="val"
 # )
-# ## print
+#
 # index = 0
 # print("index", index, ": ", train_dataset.__getitem__(index)[0].size())   #data
 # print("index", index, ": ", train_dataset.__getitem__(index)[1])   #label

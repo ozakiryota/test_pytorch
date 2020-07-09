@@ -36,6 +36,7 @@ class OriginalNet(nn.Module):
         # print("fc-in", x.size())
         x = self.fc(x)
         # print("fc-out", x.size())
+        x = nn.functional.normalize(x, p=2, dim=1)
         return x
 
 ##### test #####

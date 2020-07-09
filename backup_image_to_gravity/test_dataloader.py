@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 
 import make_datapath_list
+import compute_images_mean_std
 import data_transform
 import original_dataset
 
@@ -22,16 +23,18 @@ def show_inputs(inputs):
     plt.show()
 
 ## list
-train_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/train"
-val_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/val"
-csv_name = "imu_camera.csv"
-train_list = make_datapath_list.make_datapath_list(train_rootpath, csv_name)
-val_list = make_datapath_list.make_datapath_list(val_rootpath, csv_name)
+rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
+csv_name = "save_image_with_imu.csv"
+train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
+val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
 
-## trans param
+## mean, std
 size = 224  #VGG16
-mean = ([0.25, 0.25, 0.25])
-std = ([0.5, 0.5, 0.5])
+# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
+mean = ([0.5, 0.5, 0.5])
+std = ([0.25, 0.25, 0.25])
 
 ## dataset
 train_dataset = original_dataset.OriginalDataset(

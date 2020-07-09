@@ -22,6 +22,7 @@ class data_transform():
         mat_tensor = mat_tensor.unsqueeze_(0)
         acc = acc.astype(np.float32)
         # acc = acc/(math.sqrt(acc[0]*acc[0] + acc[1]*acc[1] + acc[2]*acc[2]))
+        # acc *= 10.0
         acc_tensor = torch.from_numpy(acc)
         return mat_tensor, acc_tensor
 

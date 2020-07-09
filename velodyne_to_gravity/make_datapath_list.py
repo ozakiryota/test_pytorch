@@ -1,8 +1,8 @@
 import csv
 import os
 
-def make_datapath_list(rootpath, csv_name, phase="train"):
-    csvpath = os.path.join(rootpath, phase, csv_name)
+def make_datapath_list(rootpath, csv_name):
+    csvpath = os.path.join(rootpath, csv_name)
     with open(csvpath) as csvfile:
         reader = csv.reader(csvfile)
         data_list = []
@@ -10,8 +10,8 @@ def make_datapath_list(rootpath, csv_name, phase="train"):
             # print(row)
             # print(row[:3])
             # print(row[3])
-            row[3] = os.path.join(rootpath, phase, row[3])
-            row[4] = os.path.join(rootpath, phase, row[4])
+            row[3] = os.path.join(rootpath, row[3])
+            row[4] = os.path.join(rootpath, row[4])
             data_list.append(row)
     return data_list
 

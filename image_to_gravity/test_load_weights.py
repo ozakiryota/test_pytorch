@@ -7,25 +7,17 @@ import torch
 from torchvision import models
 import torch.nn as nn
 
-import compute_images_mean_std
 import make_datapath_list
 import data_transform
 import original_dataset
+import original_network
 
 ## device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("device = ", device)
 
 ## network
-use_pretrained = True
-net = models.vgg16(pretrained=use_pretrained)
-net.features[26] = nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(0, 0))
-net.features = nn.Sequential(*list(net.features.children())[:-3])
-net.classifier = nn.Sequential(
-    nn.Linear(in_features=73728, out_features=18, bias=True),
-    nn.ReLU(True),
-    nn.Linear(in_features=18, out_features=3, bias=True)
-)
+net = original_network.OriginalNet()
 print(net)
 net.to(device)
 net.eval()
@@ -35,19 +27,17 @@ load_path = "./weights/weights_image_to_gravity.pth"
 load_weights = torch.load(load_path)
 net.load_state_dict(load_weights)
 
-## mean, std
+## trans param
 size = 224  #VGG16
-# dir_name = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/train"
-# file_type = "jpg"
-# mean, std = compute_images_mean_std.compute_images_mean_std(dir_name, file_type, resize=size)
-mean = ([0.5, 0.5, 0.5])
-std = ([0.25, 0.25, 0.25])
+mean = ([0.25, 0.25, 0.25])
+std = ([0.5, 0.5, 0.5])
 
 ## list
-rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
-csv_name = "save_image_with_imu.csv"
-train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
-val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
+train_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/train"
+val_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/val"
+csv_name = "imu_camera.csv"
+train_list = make_datapath_list.make_datapath_list(train_rootpath, csv_name)
+val_list = make_datapath_list.make_datapath_list(val_rootpath, csv_name)
 
 ## transform
 transform = data_transform.data_transform(size, mean, std)
@@ -77,7 +67,7 @@ inputs, labels = next(batch_iterator)
 inputs_device = inputs.to(device)
 labels_device = labels.to(device)
 outputs = net(inputs_device)
-print("tesy")
+print("outputs = ", outputs)
 
 plt.figure()
 i = 0

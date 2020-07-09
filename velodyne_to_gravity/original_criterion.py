@@ -2,12 +2,13 @@ import numpy as np
 
 import torch
 
-def originalCriterion(outputs, labels):
+def originalCriterion(outputs, labels, a):
+    # outputs = torch.mul(outputs, a)
+    # labels = torch.mul(labels, a)
+    outputs = a*outputs
+    labels = a*labels
     loss = torch.mean((outputs - labels)**2)
-    # print("loss = ", loss)
-    loss_mul = torch.mul(loss, 10)
-    # print("loss_mul = ", loss_mul)
-    return loss_mul
+    return loss
 
 ##### test #####
 # outputs = np.array([1.1, 2.2, 3.3])

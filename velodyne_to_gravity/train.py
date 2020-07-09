@@ -49,8 +49,8 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
                 with torch.set_grad_enabled(phase == "train"):  #compute grad only in "train"
                     # forward
                     outputs = net(inputs)
-                    loss = criterion(outputs, labels)
-                    # loss = original_criterion.originalCriterion(outputs, labels)
+                    # loss = criterion(outputs, labels)
+                    loss = original_criterion.originalCriterion(outputs, labels, 30)
 
                     # backward
                     if phase == "train":
@@ -98,10 +98,12 @@ if keep_reproducibility:
     torch.backends.cudnn.benchmark = False
 
 ## list
-rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne"
+# rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne"
+train_rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne/2019-01-13-15-46-58_filtered_normalized"
+val_rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset/imu_camera_velodyne/2019-12-07_filtered_normalized"
 csv_name = "imu_color_depth.csv"
-train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
-val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
+train_list = make_datapath_list.make_datapath_list(train_rootpath, csv_name)
+val_list = make_datapath_list.make_datapath_list(val_rootpath, csv_name)
 
 ## dataset
 train_dataset = original_dataset.OriginalDataset(
@@ -131,9 +133,9 @@ net = original_network.OriginalNet()
 print(net)
 
 ## optimizer
-optimizer = optim.SGD(params=net.parameters(), lr=1e-5, momentum=0.9)
+optimizer = optim.SGD(params=net.parameters(), lr=1e-4, momentum=0.9)
 print(optimizer)
 
 ## execution
-num_epochs = 20
+num_epochs = 30
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)

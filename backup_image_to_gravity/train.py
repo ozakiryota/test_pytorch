@@ -8,9 +8,9 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 
 import make_datapath_list
+import compute_images_mean_std
 import data_transform
 import original_dataset
-import original_network
 
 def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -35,28 +35,29 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
 
             epoch_loss = 0.0
 
-            if (epoch == 0) and (phase=="train"):
-                continue
+            # if (epoch == 0) and (phase=="train"):
+            #     continue
 
             for inputs, labels in tqdm(dataloaders_dict[phase]):
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 
-                ## initialize optimizer
+                # initialize optimizer
                 optimizer.zero_grad()   #reset grad to zero (after .step())
 
                 with torch.set_grad_enabled(phase == "train"):  #compute grad only in "train"
-                    ## forward
+                    # forward
                     outputs = net(inputs)
                     loss = criterion(outputs, labels)
 
-                    ## backward
+                    # backward
                     if phase == "train":
                         loss.backward()     #accumulate gradient to each Tensor
                         optimizer.step()    #update param depending on current .grad
 
-                    epoch_loss += loss.item() * inputs.size(0)
+                    epoch_loss += loss.item() * inputs.size(0)  #loss.item(): average loss in batch, inputs.size(0): 32 images
                     # print("loss.item() = ", loss.item())
+                    # print("inputs.size(0) = ", inputs.size(0))
 
             epoch_loss = epoch_loss / len(dataloaders_dict[phase].dataset)
             print("{} Loss: {:.4f}".format(phase, epoch_loss))
@@ -67,12 +68,12 @@ def train_model(net, dataloaders_dict, criterion, optimizer, num_epochs):
             else:
                 record_loss_val.append(epoch_loss)
                 writer.add_scalar("Loss/val", epoch_loss, epoch)
-    ## save param
+    # save param
     save_path = "./weights/weights_image_to_gravity.pth"
     torch.save(net.state_dict(), save_path)
     print("Parameter file is saved as ", save_path)
 
-    ## graph
+    # graph
     graph = plt.figure()
     plt.plot(range(len(record_loss_train)), record_loss_train, label="Train")
     plt.plot(range(len(record_loss_val)), record_loss_val, label="Validation")
@@ -95,16 +96,17 @@ if keep_reproducibility:
     torch.backends.cudnn.benchmark = False
 
 ## list
-train_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/train"
-val_rootpath = "/home/amsl/ozaki/airsim_ws/pkgs/airsim_controller/save/val"
-csv_name = "imu_camera.csv"
-train_list = make_datapath_list.make_datapath_list(train_rootpath, csv_name)
-val_list = make_datapath_list.make_datapath_list(val_rootpath, csv_name)
+rootpath = "/home/amsl/ros_catkin_ws/src/save_dataset/dataset"
+csv_name = "save_image_with_imu.csv"
+train_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="train")
+val_list = make_datapath_list.make_datapath_list(rootpath, csv_name, phase="val")
 
-## trans param
+## mean, std
 size = 224  #VGG16
-mean = ([0.25, 0.25, 0.25])
-std = ([0.5, 0.5, 0.5])
+# file_type = "jpg"
+# mean, std = compute_images_mean_std.compute_images_mean_std(rootpath + "/train", file_type, resize=size)
+mean = ([0.5, 0.5, 0.5])
+std = ([0.25, 0.25, 0.25])
 
 ## dataset
 train_dataset = original_dataset.OriginalDataset(
@@ -119,7 +121,7 @@ val_dataset = original_dataset.OriginalDataset(
 )
 
 ## dataloader
-batch_size = 60
+batch_size = 50
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
@@ -127,27 +129,55 @@ print("train data: ", len(dataloaders_dict["train"].dataset))
 print("val data: ", len(dataloaders_dict["val"].dataset))
 
 ## criterion
+# criterion = nn.CrossEntropyLoss()
 criterion = nn.MSELoss()
 
 ## network
-net = original_network.OriginalNet()
+use_pretrained = True
+net = models.vgg16(pretrained=use_pretrained)
+net.features[26] = nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(0, 0))
+net.features = nn.Sequential(*list(net.features.children())[:-3])
+net.classifier = nn.Sequential(
+    nn.Linear(in_features=73728, out_features=18, bias=True),
+    nn.ReLU(True),
+    nn.Linear(in_features=18, out_features=3, bias=True)
+    # nn.ReLU(True)
+)
 print(net)
 
 ## param
-list_cnn_param_value, list_fc_param_value = net.getParamValueList()
-# list_param = []
-# for _, param_value in net.named_parameters():
-#     param_value.requires_grad = True
-#     list_param.append(param_value)
+params_to_update_1 = []
+params_to_update_2 = []
+
+update_param_names_1  = ["features.26.weight", "features.26.bias"]
+update_param_names_2  = ["classifier"]
+
+for name, param in net.named_parameters():
+    # print(name)
+    # print(param)
+
+    if name in update_param_names_1:
+        param.requires_grad = True
+        params_to_update_1.append(param)
+        print("add to params_to_update_1: ", name)
+    elif update_param_names_2[0] in name:
+        param.requires_grad = True
+        params_to_update_2.append(param)
+        print("add to params_to_update_2: ", name)
+    else:
+        param.requires_grad = False
+
+print("----------")
+# print("params_to_update_1:\n", params_to_update_1)
+# print("params_to_update_2:\n", params_to_update_2)
 
 ## optimizer
 optimizer = optim.SGD([
-    {"params": list_cnn_param_value, "lr": 1e-4},
-    {"params": list_fc_param_value, "lr": 1e-3}
+    {"params": params_to_update_1, "lr": 5e-6},
+    {"params": params_to_update_2, "lr": 5e-6}
 ], momentum=0.9)
-# optimizer = optim.SGD(params=list_param, lr=1e-4, momentum=0.9)
 print(optimizer)
 
 ## execution
-num_epochs = 50
+num_epochs = 200
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)
