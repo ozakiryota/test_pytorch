@@ -119,7 +119,7 @@ val_dataset = original_dataset.OriginalDataset(
 )
 
 ## dataloader
-batch_size = 60
+batch_size = 100
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 dataloaders_dict = {"train": train_dataloader, "val": val_dataloader}
@@ -132,22 +132,20 @@ criterion = nn.MSELoss()
 ## network
 net = original_network.OriginalNet()
 print(net)
+# vgg = models.vgg16(pretrained=True)
+# print(vgg)
+
 
 ## param
 list_cnn_param_value, list_fc_param_value = net.getParamValueList()
-# list_param = []
-# for _, param_value in net.named_parameters():
-#     param_value.requires_grad = True
-#     list_param.append(param_value)
 
 ## optimizer
 optimizer = optim.SGD([
     {"params": list_cnn_param_value, "lr": 1e-4},
     {"params": list_fc_param_value, "lr": 1e-3}
 ], momentum=0.9)
-# optimizer = optim.SGD(params=list_param, lr=1e-4, momentum=0.9)
 print(optimizer)
 
 ## execution
-num_epochs = 50
+num_epochs = 200
 train_model(net, dataloaders_dict, criterion, optimizer, num_epochs=num_epochs)

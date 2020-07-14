@@ -82,6 +82,7 @@ def accToRP(acc):
     print("r[deg]: ", r/math.pi*180.0, " p[deg]: ", p/math.pi*180.0)
     return r, p
 
+th_outlier_deg = 5.0
 for i in range(inputs.size(0)):
     print(i)
     print("label: ", labels[i])
@@ -96,7 +97,10 @@ for i in range(inputs.size(0)):
     if i < h*w:
         plt.subplot(h, w, i+1)
         plt.imshow(np.clip(inputs[i].numpy().transpose((1, 2, 0)), 0, 1))
-        plt.title(i)
+        if (abs(e_r/math.pi*180.0) < th_outlier_deg) and (abs(e_p/math.pi*180.0) < th_outlier_deg):
+            plt.title(str(i) + "*")
+        else:
+            plt.title(i)
         plt.tick_params(labelbottom=False, labelleft=False, bottom=False, left=False)
 
 print("---ave---\n e_r[deg]: ", sum_r/inputs.size(0)/math.pi*180.0, " e_p[deg]: ", sum_p/inputs.size(0)/math.pi*180.0)

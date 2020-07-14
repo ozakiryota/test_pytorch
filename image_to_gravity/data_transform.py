@@ -28,7 +28,7 @@ class data_transform():
         if phase == "train":
         # if (phase == "train") or (phase == "val"):
             ## random
-            angle_deg = random.uniform(-10, 10)
+            angle_deg = random.uniform(-10.0, 10.0)
             angle_rad = angle_deg / 180 * math.pi
             # print("angle_deg = ", angle_deg)
 

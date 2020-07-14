@@ -15,9 +15,11 @@ class OriginalNet(nn.Module):
         self.features = vgg.features
         self.fc = nn.Sequential(
             nn.Linear(25088, 100),
-            nn.ReLU(True),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.1),
             nn.Linear(100, 18),
-            nn.ReLU(True),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.1),
             nn.Linear(18, 3)
         )
         self.copyVggParam(vgg)
