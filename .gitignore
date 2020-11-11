@@ -7,3 +7,7 @@ backup_image_to_gravity/weights
 backup_image_to_gravity/runs
 velodyne_to_gravity/weights
 velodyne_to_gravity/runs
+single_image_to_graviy/weights
+single_image_to_graviy/graph
+single_image_to_graviy/save
+single_image_to_graviy/logs
